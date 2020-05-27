@@ -1,0 +1,156 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage[colorlinks, citecolor=blue, urlcolor=black]{hyperref}
+\usepackage{natbib}
+\usepackage{amsmath,amssymb}
+\usepackage{float}
+\usepackage[bottom]{footmisc}
+\usepackage[left=2.5cm, right=2.5cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{setspace}
+\usepackage{seqsplit}
+
+\title{Using Webscraping and Textmining for Constructing the Market Landscape of Firms}
+\author{Sebastian Heinrich\thanks{\href{mailto:heinrich@kof.ethz.ch}{heinrich@kof.ethz.ch}}, Michael König\thanks{\href{mailto:koenig@kof.ethz.ch}{koenig@kof.ethz.ch}}, Timo Schäfer\thanks{\href{mailto:t.schaefer@wiwi.uni-frankfurt.de}{t.schaefer@wiwi.uni-frankfurt.de}}, Martin Wörter\thanks{\href{mailto:woerter@kof.ethz.ch}{woerter@kof.ethz.ch}}}
+\date{\today}
+
+\usepackage{natbib}
+\bibliographystyle{plain}
+\usepackage{graphicx}
+
+\begin{document}
+\linespread{1.25}
+
+\maketitle
+
+\section{Data crawling}
+For each company's domain, a web crawler downloads all textual content and links by considering the content on the landing page and one page behind.
+For now, we restrict neither the download size of a webpage's content nor the number of webpages that are downloaded until a depth of two is reached.
+We do not apply any heuristics at this stage to select which content is downloaded, e.g. URL length, such that we ensure that all potentially relevant content is downloaded.  
+
+It would be useful to use a proxy in future, such that it is guaranteed that the crawler downloads the content from the English version of the respective domain.
+Due to the usage of a German IP address, the landing page of large companies is often in German.
+The crawler handles errors, especially when there is a time-out error or when the crawler is not allowed to connect to a domain.
+In these cases, the respective company is disregarded from the analysis that we outline in the following sections.
+For more details on the current implementation and future to-dos, see appendix \eqref{app:crawling}.
+
+Yet, one has to investigate carefully why some webpages experience specific errors - both with and without error messages.
+
+\section{Data preprocessing}
+\subsection{Data aggregation and indexing}
+For each webpage, the crawler creates a csv file that contains the textual content and the URL path of the respective domain.
+We index each domain and its subpages such that the textual content of each webpage can be easily aggregated and the domain can be more easily cleaned, see section \eqref{sec:webpageCleaning}.
+
+
+\subsection{General preprocessing}
+For each webpage, an algorithm classifies the language of every textual data point \citep{Joulin2016,Joulin2016a}.\footnote{We use following pre-trained model for language identification: \href{https://fasttext.cc/docs/en/language-identification.html}{https://fasttext.cc/docs/en/language-identification.html}}
+Then, conditional on that a text's language is English, text is tokenized, uncapitalized, stopwords\footnote{A list of English stopwords comes from \href{https://www.nltk.org/book/ch02.html}{https://www.nltk.org/book/ch02.html}} and punctuation is removed.
+We decide in favor of term taggers using the fastText\footnote{\href{https://fasttext.cc/}{https://fasttext.cc/}} library since they are trained on crawled web data that is highly similar to our data on firms' webpages.
+Afterwards, words are mapped to the respective IDs of the fastText English word embeddings\footnote{Words that cannot be found in the fastText vocabulary are removed, but stored in a separate file for further checks, see \href{https://fasttext.cc/docs/en/english-vectors.html}{https://fasttext.cc/docs/en/english-vectors.html}.} that are used in the subsequent analysis \citep{Mikolov2018}.
+
+
+\subsection{Webpage cleaning within and between webpages}
+\label{sec:webpageCleaning}
+For each webpage, there exist several subpages that (potentially) contain irrelevant information without capturing intrinsic, discriminatory details.
+On the one hand, we want to remove textual content that is too general, e.g. 'All rights reserved', appears on every page (or threshold), and we can therefore identify using simple heuristics.
+%across domains as well...
+On the other hand, we want to remove the complete textual content from a webpage that contains non-discriminatory information, e.g. login or contact pages.
+The algorithm we use for this classification problem is described in the appendix \eqref{sec:relevIrrelev}.
+
+  
+%\subsection{Language transformation}
+%We represent the textual content of a webpage using word embeddings, i.e. each word is mapped to a word vector - conditional on the word's language.
+%For this purpose, we use fasttext\footnote{\href{https://fasttext.cc/docs/en/crawl-vectors.html}{https://fasttext.cc/docs/en/crawl-vectors.html}} to identify the language of a text. 
+%%word vectors that are trained on Wikipedia and crawled web data with the advantage of capturing some information w.r.t. word order of a word's context. 
+%Since the word vectors of 'example' and 'Beispiel' are not necessarily equivalent (or very close), we need to find a mapping from one language's embedding space to another language's embedding space.
+%We rely on aligned word vectors provided by fasttext.\footnote{\href{https://fasttext.cc/docs/en/aligned-vectors.html}{https://fasttext.cc/docs/en/aligned-vectors.html}}
+%%Alternatively, we might utilize the MUSE\footnote{\href{https://github.com/facebookresearch/MUSE}{https://github.com/facebookresearch/MUSE}} library by Facebook to find a multilingual embedding space for our set of four language, i.e. German, English, Italian, and French.   
+
+
+
+\section{Learning firms' product and technology portfolios}
+\subsection{Products}
+We use companies' NAICS codes\footnote{\href{https://www.naics.com/search/}{https://www.naics.com/search/}} (and/or Factset product information) as target variable to learn a firms' product portfolios from the firms' websites.
+We have primary and secondary NAICS codes for firms, while we formulate a multi-class classification problem for primary NAICS codes and a multi-label classification problem for secondary NAICS codes. 
+For this purpose, we use a Deep Convolutional Neural Network (CNN) as outlined in Figure \eqref{fig:dcnn} that comes from \cite{Kalchbrenner2014}.
+
+%\href{https://arxiv.org/pdf/1408.5882.pdf}{https://arxiv.org/pdf/1408.5882.pdf}
+%out-of-sample prediction for statistical validation
+%	\item use, e.g., LIME to make sense of the neural networks, i.e. which words most predictive for which class?
+%	\item CNN %https://github.com/graykode/nlp-tutorial
+
+
+\subsection{Technologies}
+We use patent data, e.g. patent classification IDs and patents' titles, as input for a supervised learning algorithm of firms' technologies.
+The formulation of the classification problem is analogous to the one for products.
+
+
+%\section{Unsupervised learning}
+%\begin{itemize}
+%	\item clustering by aggregating word vecs on doc-level                             
+%	\item multilingual: \href{http://www.aclweb.org/anthology/W13-3212}{http://www.aclweb.org/anthology/W13-3212}                                     
+%	\item topical word embeddings: \href{https://www.aaai.org/ocs/index.php/AAAI/AAAI15/paper/viewFile/9314/9535}{https://www.aaai.org/ocs/index.php/AAAI/AAAI15/paper/viewFile/9314/9535}
+%\end{itemize}
+
+
+\newpage
+\bibliography{bib}
+
+\newpage
+\appendix
+\section{Data crawling}
+\label{app:crawling}
+\subsection{Changes {\small (clarifications)}}
+\begin{itemize}
+	\item batch version corrected
+	\item parallelisation implemented (previous version didn't work)
+	\item depth (\texttt{DEPTH\_LIMIT}): 2 (excluding non-domain links via \texttt{LxmlLinkExtractor}), 
+	get links and content from main page and one page behind.\footnote{Subpages have to \textit{contain} main domain name, e.g. for domain \texttt{gm.com}, \texttt{media.gm.com} and \texttt{gm.com/our-brands} are included. But: subpages \texttt{xbox.com} or \texttt{channel9.msdn.com} on \texttt{microsoft.com} are not "visited".} An alternative specification using number of 'fragments/' is implemented as well, but does not 'yield better results'.
+	\item \texttt{PAGE\_COUNT\_LIMIT}: 1000 
+	\item \texttt{DEPTH\_PRIORITY}: breadth (unchanged, instead of depth)
+	\item \texttt{DOWNLOAD\_MAXSIZE} set to 1GB (before 5MB)
+	\item add bvdid as variable in text output (mapping from bvdid to webpage isn't bijective)
+	\item obtain \textit{English} version of webpage; if not easily available, throw error and disregard webpage (see to-dos)
+	\item error handling for timeout (might increase waiting time), http and dnslookup error: write error into text.csv file (and into log file)	
+	\item html encoding errors corrected (set to "ignored")
+	\item {allowed\_domains} more flexible: include both Orbis url and first request url, see e.g. \texttt{\seqsplit{cardinalhealth.com}} though in Orbis \texttt{cardinal.com}\\
+	\item set \texttt{dont\_filter} to True (and manually incorporate depth because it is not considered somehow...), otherwise strange behavior because it does not follow all links for every domain
+	\item TimeOutError, when too many requests started
+	\item too many open files error: \texttt{ulimit -Sn 40000}
+\end{itemize}
+
+\subsection{To-dos}
+\begin{itemize}
+	\item javascript error, see e.g. \textit{www.jea.com}
+    \item preferred \textbf{language} always set to English (sometimes not working via \texttt{Accept-Language}, see \texttt{microsoft.com}) $\Rightarrow$ using heuristics and exception handling to circumvent this does not work reliably $\Rightarrow$ use proxies\footnote{For instance, \href{https://www.hidemyass.com/de-de/pricing}{https://www.hidemyass.com/de-de/pricing}}
+	\item what is the \textbf{'optimal depth'}? do some manual checks for companies of different size and technology vs. products
+	\item check whether downloaded content from webpages is complete (all links downloaded?)\\
+	$\Rightarrow$ error handling in case of httperrors, while other parts of domain are downloaded
+	\item potentially only store information from "relevant" tags and identify subpages with granular information by using url information, e.g. \#fragments in url (see ARGUS)
+	\item 403 error (access denied), see \href{https://docs.scrapy.org/en/latest/topics/practices.html\#avoiding-getting-banned}{https://docs.scrapy.org/en/latest/topics/practices.html\#avoiding-getting-banned}
+	\item change configuration (?): \texttt{robots.txt} (\texttt{ROBOTSTXT\_OBEY} currently set to true)
+	\item (gain better understanding of middlewares)
+	\item (appearance of relative paths?)
+\end{itemize}
+
+
+
+\section{Classification relevant vs. irrelevant webpage content}
+\label{sec:relevIrrelev}
+For the purpose to identify whether a webpage contains relevant or irrelevant information, we construct a data sample using simple heuristics.
+First, a webpage is labeled as 'relevant' ($r$) if it contains words such as 'about', 'product' or 'service' in the webpage's URL.
+Second, a webpage is labeled as 'irrelevant' ($\neg r$) if it contains words such as 'privacy', 'contact' or 'disclaimer' in the webpage's URL.\footnote{The current list of keywords in URLs is as follows: \seqsplit{"termsofuse|privacy|data|contact|impressum|search|disclaimer|cookie|investors|site-terms|faqs|compliance|login|support"}}
+Then, we represent a webpage's textual content in an embedding space to capture the semantic structure of a webpage.
+This allows us to classify a webpage as $r$ or $\neg r$ conditional on its word embeddings.\footnote{For a given webpage, we take the mean of all words' embedding vectors.}
+For an overview of the network architecture from \cite{Kalchbrenner2014}, see Figure \eqref{fig:dcnn}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.4]{graphics/dcnn.png}
+\caption{Deep Convolutional Neural Network (CNN) for classification.}
+\label{fig:dcnn}
+\end{figure}
+
+
+\end{document}

@@ -1,0 +1,12 @@
+\BOOKMARK [1][-]{section.1}{Data crawling}{}% 1
+\BOOKMARK [1][-]{section.2}{Data preprocessing}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Data aggregation and indexing}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{General preprocessing}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Webpage cleaning within and between webpages}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Learning firms' product and technology portfolios}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Products}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{Technologies}{section.3}% 8
+\BOOKMARK [1][-]{appendix.A}{Data crawling}{}% 9
+\BOOKMARK [2][-]{subsection.A.1}{Changes \(clarifications\)}{appendix.A}% 10
+\BOOKMARK [2][-]{subsection.A.2}{To-dos}{appendix.A}% 11
+\BOOKMARK [1][-]{appendix.B}{Classification relevant vs. irrelevant webpage content}{}% 12

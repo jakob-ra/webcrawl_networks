@@ -1,0 +1,15 @@
+{
+  "projectName": "CH Crawls",
+  "pathToCSVUrlList": "/Users/Mariella/OneDrive/ETH/git/webcrawler/Data/01_Orbis/orbis_webaddresses/CH/",
+  "nameUrlList": "Orbis_Web_CH_uniqueURLs_0.csv",
+  "csvDelimiter": ";",
+  "pagesPerDomain": 1000,
+  "depthPerDomain": 2,
+  "languagePreference": "'en,en-us'",
+  "numberOfProcesses": 3,
+  "outputFilePath": "/Users/Mariella/OneDrive/ETH/git/webcrawler/Data/06_Output",
+  "GetArchiveUrls": "True",
+  "ArchiveInputFilePath": "/Users/Mariella/OneDrive/ETH/git/webcrawler/Data/01_Orbis/orbis_webaddresses/CH/company-websites-list.csv",
+  "ArchiveOutputFilePath": "/Users/Mariella/OneDrive/ETH/git/webcrawler/Data/01_Orbis/orbis_webaddresses/CH/Archive_WebURLS_Output/",
+  "nameArchiveList": "Archive_Web_Urls.csv"
+}

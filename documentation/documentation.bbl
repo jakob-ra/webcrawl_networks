@@ -1,0 +1,26 @@
+\begin{thebibliography}{1}
+
+\bibitem{Joulin2016a}
+Armand Joulin, Edouard Grave, Piotr Bojanowski, Matthijs Douze, H{\'e}rve
+  J{\'e}gou, and Tomas Mikolov.
+\newblock Fasttext.zip: Compressing text classification models.
+\newblock {\em arXiv preprint arXiv:1612.03651}, 2016.
+
+\bibitem{Joulin2016}
+Armand Joulin, Edouard Grave, Piotr Bojanowski, and Tomas Mikolov.
+\newblock Bag of tricks for efficient text classification.
+\newblock {\em arXiv preprint arXiv:1607.01759}, 2016.
+
+\bibitem{Kalchbrenner2014}
+Nal Kalchbrenner, Edward Grefenstette, and Phil Blunsom.
+\newblock A convolutional neural network for modelling sentences.
+\newblock {\em arXiv preprint arXiv:1404.2188}, 2014.
+
+\bibitem{Mikolov2018}
+Tomas Mikolov, Edouard Grave, Piotr Bojanowski, Christian Puhrsch, and Armand
+  Joulin.
+\newblock Advances in pre-training distributed word representations.
+\newblock In {\em Proceedings of the International Conference on Language
+  Resources and Evaluation (LREC 2018)}, 2018.
+
+\end{thebibliography}
