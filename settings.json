@@ -1,0 +1,15 @@
+{
+  "projectName": "fortune_100_crawl",
+  "pathToCSVUrlList": "/Users/Jakob/Documents/GitHub/webcrawl_networks/",
+  "nameUrlList": "fortune_100_urls.csv",
+  "csvDelimiter": ";",
+  "pagesPerDomain": 1000,
+  "depthPerDomain": 10,
+  "languagePreference": "'en,en-us'",
+  "numberOfProcesses": 8,
+  "outputFilePath": "/Users/Jakob/Documents/GitHub/webcrawl_networks/output",
+  "GetArchiveUrls": "True",
+  "ArchiveInputFilePath": "/Users/Jakob/Documents/GitHub/webcrawl_networks/fortune_100_urls.csv",
+  "ArchiveOutputFilePath": "/Users/Jakob/Documents/GitHub/webcrawl_networks/output/archive",
+  "nameArchiveList": "Archive_Web_Urls.csv"
+}
